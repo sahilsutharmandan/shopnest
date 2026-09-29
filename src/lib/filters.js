@@ -1,12 +1,24 @@
 export function filterProducts(products, filters) {
   const { category, q, rating, priceMax } = filters;
-  return products.filter((p) => {
-    if (category && p.category !== category) return false;
-    if (q && !`${p.title} ${p.brand} ${p.description}`.toLowerCase().includes(q.toLowerCase())) return false;
-    if (rating && p.rating < rating) return false;
-    if (priceMax && p.price > priceMax) return false;
-    return true;
-  });
+  let result = products;
+
+  if (category) {
+    result = products.filter((p) => p.category === category);
+  }
+  if (q) {
+    const needle = q.toLowerCase();
+    result = products.filter((p) =>
+      `${p.title} ${p.brand} ${p.description}`.toLowerCase().includes(needle),
+    );
+  }
+  if (rating) {
+    result = products.filter((p) => p.rating >= rating);
+  }
+  if (priceMax) {
+    result = products.filter((p) => p.price <= priceMax);
+  }
+
+  return result;
 }
 
 export function sortProducts(products, sort) {
