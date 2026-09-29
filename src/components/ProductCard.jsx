@@ -56,12 +56,12 @@ export default function ProductCard({ product, view = "grid" }) {
               <p className="text-lg font-bold">{formatPrice(priceNow)}</p>
               {hasDiscount && (
                 <p className="text-xs text-muted">
-                  <span className="line-through">{formatPrice(product.price)}</span>
+                  <span>{formatPrice(product.price)}</span>
                   <span className="ml-2 font-semibold text-emerald-600">-{Math.round(product.discountPercentage)}%</span>
                 </p>
               )}
             </div>
-            <button onClick={handleAdd} disabled={outOfStock} className={outOfStock ? "btn-outline cursor-not-allowed" : "btn-primary"}>
+            <button onClick={handleAdd} disabled={outOfStock} className="btn-primary">
               {outOfStock ? "Out of stock" : "Add to cart"}
             </button>
           </div>
@@ -71,16 +71,16 @@ export default function ProductCard({ product, view = "grid" }) {
   }
 
   return (
-    <div className="group flex flex-col rounded-xl bg-white shadow-card">
+    <div className="rounded-xl bg-white shadow-card">
       <Link href={`/product?id=${product.id}`} className="relative block overflow-hidden rounded-t-xl">
-        <img src={product.thumbnail} alt={product.title} className="h-52 w-full bg-gray-100 object-cover transition group-hover:scale-105" />
+        <img src={product.thumbnail} alt={product.title} className="h-52 w-full bg-gray-100 object-cover" />
         {hasDiscount && (
           <span className="badge absolute left-3 top-3 bg-emerald-100 text-emerald-700">
             -{Math.round(product.discountPercentage)}%
           </span>
         )}
         {outOfStock && (
-          <span className="badge absolute right-3 top-3 bg-gray-200 text-gray-700">Out of stock</span>
+          <span className="badge absolute right-3 top-3 bg-gray-100 text-gray-400">Out of stock</span>
         )}
         <button
           onClick={handleWishlist}
@@ -90,7 +90,7 @@ export default function ProductCard({ product, view = "grid" }) {
           <HeartIcon filled={isWished} className="h-4 w-4" />
         </button>
       </Link>
-      <div className="flex flex-1 flex-col p-4">
+      <div className="p-4">
         <p className="text-[11px] uppercase tracking-wide text-muted">{product.brand}</p>
         <Link href={`/product?id=${product.id}`} className="mt-0.5 text-sm font-semibold hover:text-brand-600">
           {product.title}
@@ -101,12 +101,12 @@ export default function ProductCard({ product, view = "grid" }) {
         <div className="mt-3 flex items-center justify-between">
           <div>
             <p className="text-base font-bold">{formatPrice(priceNow)}</p>
-            {hasDiscount && <p className="text-xs text-muted line-through">{formatPrice(product.price)}</p>}
+            {hasDiscount && <p className="text-xs text-muted">{formatPrice(product.price)}</p>}
           </div>
           <button
             onClick={handleAdd}
             disabled={outOfStock}
-            className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-700 disabled:bg-gray-300"
+            className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-700"
           >
             Add
           </button>
