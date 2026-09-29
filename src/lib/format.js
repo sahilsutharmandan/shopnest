@@ -1,5 +1,5 @@
 export function formatPrice(value) {
-  return "$" + Math.round(value * 100) / 100;
+  return "$" + (Math.round(value * 1000000) / 1000000);
 }
 
 export function salePrice(product) {
