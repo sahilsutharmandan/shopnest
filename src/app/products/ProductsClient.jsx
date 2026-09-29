@@ -43,7 +43,8 @@ export default function ProductsClient() {
   );
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const visible = filtered.slice((pageState - 1) * PAGE_SIZE, pageState * PAGE_SIZE);
+  const currentPage = Math.min(pageState, totalPages);
+  const visible = filtered.slice(0, PAGE_SIZE);
 
   function updateParam(key, value) {
     const next = new URLSearchParams(params.toString());
