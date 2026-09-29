@@ -73,8 +73,6 @@ export default function CheckoutClient() {
   }
 
   function handleNext() {
-    if (step === 0 && !validateAddress()) return;
-    if (step === 2 && !validatePayment()) return;
     setStep((s) => Math.min(3, s + 1));
   }
 
