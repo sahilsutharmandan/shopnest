@@ -90,7 +90,7 @@ export default function ProductsClient() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
-        <aside className={`${sidebarOpen ? "block" : "hidden"} lg:block`}>
+        <aside className={`${sidebarOpen ? "block" : "hidden"} md:block`}>
           <div className="rounded-xl bg-white p-5 shadow-card">
             <p className="mb-3 text-sm font-semibold">Category</p>
             <ul className="space-y-1 text-sm">

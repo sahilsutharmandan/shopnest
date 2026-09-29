@@ -3,7 +3,7 @@ export default function DealsStrip() {
   const full = [...items, ...items];
   return (
     <section className="border-y border-gray-200 bg-white py-3">
-      <div className="overflow-hidden">
+      <div>
         <div className="flex w-max animate-marquee gap-12 whitespace-nowrap px-6 text-sm font-medium text-muted">
           {full.map((item, i) => (
             <span key={i} className="flex items-center gap-2">
