@@ -72,12 +72,46 @@ export default function CheckoutClient() {
     return Object.keys(errors).length === 0;
   }
 
+  function updateAddress(field, value) {
+    setAddress((prev) => ({ ...prev, [field]: value }));
+    if (addressErrors[field]) {
+      setAddressErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  }
+
+  function updatePayment(field, value) {
+    setPayment((prev) => ({ ...prev, [field]: value }));
+    if (paymentErrors[field]) {
+      setPaymentErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  }
+
   function handleNext() {
+    if (step === 0) {
+      if (!validateAddress()) return;
+    } else if (step === 2) {
+      if (!validatePayment()) return;
+    }
     setStep((s) => Math.min(3, s + 1));
   }
 
   function handlePlace() {
-    if (!validatePayment()) return;
+    if (!validateAddress()) {
+      setStep(0);
+      return;
+    }
+    if (!validatePayment()) {
+      setStep(2);
+      return;
+    }
     setProcessing(true);
     setTimeout(() => {
       const clean = payment.card.replace(/\s/g, "");
@@ -126,16 +160,16 @@ export default function CheckoutClient() {
             <div className="space-y-4">
               <p className="text-lg font-semibold">Shipping address</p>
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Full name" value={address.fullName} error={addressErrors.fullName} onChange={(v) => setAddress({ ...address, fullName: v })} />
-                <Field label="Email" type="email" value={address.email} error={addressErrors.email} onChange={(v) => setAddress({ ...address, email: v })} />
-                <Field label="Phone" value={address.phone} error={addressErrors.phone} onChange={(v) => setAddress({ ...address, phone: v })} />
-                <Field label="Country" value={address.country} onChange={(v) => setAddress({ ...address, country: v })} />
+                <Field label="Full name" value={address.fullName} error={addressErrors.fullName} onChange={(v) => updateAddress("fullName", v)} />
+                <Field label="Email" type="email" value={address.email} error={addressErrors.email} onChange={(v) => updateAddress("email", v)} />
+                <Field label="Phone" value={address.phone} error={addressErrors.phone} onChange={(v) => updateAddress("phone", v)} />
+                <Field label="Country" value={address.country} onChange={(v) => updateAddress("country", v)} />
                 <div className="sm:col-span-2">
-                  <Field label="Street address" value={address.line1} error={addressErrors.line1} onChange={(v) => setAddress({ ...address, line1: v })} />
+                  <Field label="Street address" value={address.line1} error={addressErrors.line1} onChange={(v) => updateAddress("line1", v)} />
                 </div>
-                <Field label="City" value={address.city} error={addressErrors.city} onChange={(v) => setAddress({ ...address, city: v })} />
-                <Field label="State" value={address.state} error={addressErrors.state} onChange={(v) => setAddress({ ...address, state: v })} />
-                <Field label="ZIP" value={address.zip} error={addressErrors.zip} onChange={(v) => setAddress({ ...address, zip: v })} />
+                <Field label="City" value={address.city} error={addressErrors.city} onChange={(v) => updateAddress("city", v)} />
+                <Field label="State" value={address.state} error={addressErrors.state} onChange={(v) => updateAddress("state", v)} />
+                <Field label="ZIP" value={address.zip} error={addressErrors.zip} onChange={(v) => updateAddress("zip", v)} />
               </div>
             </div>
           )}
@@ -162,11 +196,11 @@ export default function CheckoutClient() {
             <div className="space-y-4">
               <p className="text-lg font-semibold">Payment</p>
               <p className="text-sm text-muted">Use <strong>4242 4242 4242 4242</strong> to succeed or <strong>4000 0000 0000 0002</strong> to test a decline.</p>
-              <Field label="Card number" placeholder="4242 4242 4242 4242" value={payment.card} error={paymentErrors.card} onChange={(v) => setPayment({ ...payment, card: v.replace(/[^\d ]/g, "").slice(0, 19) })} />
-              <Field label="Name on card" value={payment.name} error={paymentErrors.name} onChange={(v) => setPayment({ ...payment, name: v })} />
+              <Field label="Card number" placeholder="4242 4242 4242 4242" value={payment.card} error={paymentErrors.card} onChange={(v) => updatePayment("card", v.replace(/[^\d ]/g, "").slice(0, 19))} />
+              <Field label="Name on card" value={payment.name} error={paymentErrors.name} onChange={(v) => updatePayment("name", v)} />
               <div className="grid grid-cols-2 gap-4">
-                <Field label="Expiry (MM/YY)" placeholder="04/29" value={payment.expiry} error={paymentErrors.expiry} onChange={(v) => setPayment({ ...payment, expiry: v.replace(/[^\d/]/g, "").slice(0, 5) })} />
-                <Field label="CVV" placeholder="123" value={payment.cvv} error={paymentErrors.cvv} onChange={(v) => setPayment({ ...payment, cvv: v.replace(/\D/g, "").slice(0, 4) })} />
+                <Field label="Expiry (MM/YY)" placeholder="04/29" value={payment.expiry} error={paymentErrors.expiry} onChange={(v) => updatePayment("expiry", v.replace(/[^\d/]/g, "").slice(0, 5))} />
+                <Field label="CVV" placeholder="123" value={payment.cvv} error={paymentErrors.cvv} onChange={(v) => updatePayment("cvv", v.replace(/\D/g, "").slice(0, 4))} />
               </div>
             </div>
           )}

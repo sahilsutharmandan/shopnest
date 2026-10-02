@@ -11,7 +11,7 @@ export function findCoupon(code) {
 }
 
 export function getTotals(items, coupon, shippingPrice = 5.99) {
-  const subtotal = items.reduce((sum, item) => sum + salePrice(item) * item.qty, 0);
+  const subtotal = items.reduce((sum, item) => sum + salePrice(item) * (Number(item.qty) || 0), 0);
 
   let discount = 0;
   let shipping = subtotal >= FREE_SHIPPING_OVER || items.length === 0 ? 0 : shippingPrice;

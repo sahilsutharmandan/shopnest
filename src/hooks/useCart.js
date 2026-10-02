@@ -9,8 +9,8 @@ export function useCartItems() {
 export function useCartCount() {
   const items = useCartItems();
   return useMemo(
-    () => items.reduce((count, item) => count + item.qty, 0),
-    [items.length]
+    () => items.reduce((count, item) => count + (Number(item.qty) || 0), 0),
+    [items]
   );
 }
 
