@@ -22,8 +22,9 @@ export function getTotals(items, coupon, shippingPrice = 5.99) {
     if (coupon.type === "shipping") shipping = 0;
   }
 
-  const tax = (subtotal - discount) * TAX_RATE;
-  const total = subtotal - discount + shipping + tax;
+  discount = Math.round(discount * 100) / 100;
+  const tax = Math.round((subtotal - discount) * TAX_RATE * 100) / 100;
+  const total = Math.round((subtotal - discount + shipping + tax) * 100) / 100;
 
   return { subtotal, discount, shipping, tax, total };
 }

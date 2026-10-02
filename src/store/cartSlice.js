@@ -6,6 +6,11 @@ const initialState = {
   drawerOpen: false,
 };
 
+function normalizeQty(qty) {
+  const value = Number(qty);
+  return Number.isFinite(value) ? Math.max(1, Math.floor(value)) : 1;
+}
+
 function toCartItem(product, qty) {
   return {
     id: product.id,
@@ -15,7 +20,7 @@ function toCartItem(product, qty) {
     price: product.price,
     discountPercentage: product.discountPercentage,
     stock: product.stock,
-    qty,
+    qty: normalizeQty(qty),
   };
 }
 
@@ -24,13 +29,13 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     hydrateCart(state, action) {
-      return { ...state, ...action.payload, drawerOpen: false };
+      return { ...state, ...action.payload, items: (action.payload.items || []).map((item) => ({ ...item, qty: normalizeQty(item.qty) })), drawerOpen: false };
     },
     addToCart(state, action) {
       const { product, qty = 1 } = action.payload;
       const existing = state.items.find((item) => item.id === product.id);
       if (existing) {
-        existing.qty += qty;
+        existing.qty = normalizeQty(existing.qty) + normalizeQty(qty);
       } else {
         state.items.push(toCartItem(product, qty));
       }
@@ -38,7 +43,7 @@ const cartSlice = createSlice({
     updateQty(state, action) {
       const { id, qty } = action.payload;
       const item = state.items.find((i) => i.id === id);
-      if (item) item.qty = qty;
+      if (item) item.qty = normalizeQty(qty);
     },
     removeFromCart(state, action) {
       state.items = state.items.filter((item) => item.id !== action.payload);

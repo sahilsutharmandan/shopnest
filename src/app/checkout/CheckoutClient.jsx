@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { clearCart } from "@/store/cartSlice";
@@ -9,6 +9,7 @@ import { placeOrder } from "@/store/ordersSlice";
 import { showToast } from "@/store/toastSlice";
 import { useCartItems, useCartTotals } from "@/hooks/useCart";
 import { formatPrice, salePrice } from "@/lib/format";
+import { getTotals } from "@/lib/cart";
 import { shippingMethods } from "@/data/coupons";
 import { CheckIcon } from "@/components/Icons";
 
@@ -18,6 +19,7 @@ export default function CheckoutClient() {
   const router = useRouter();
   const dispatch = useDispatch();
   const items = useCartItems();
+  const coupon = useSelector((state) => state.cart.coupon);
   const user = useSelector((state) => state.auth.user);
   const [step, setStep] = useState(0);
   const [shippingId, setShippingId] = useState("standard");
@@ -54,6 +56,7 @@ export default function CheckoutClient() {
     if (!/^\S+@\S+\.\S+$/.test(address.email)) errors.email = "A valid email is required";
     if (!address.phone.trim()) errors.phone = "Phone is required";
     if (!address.line1.trim()) errors.line1 = "Street address is required";
+    if (!address.country.trim()) errors.country = "Country is required";
     if (!address.city.trim()) errors.city = "City is required";
     if (!address.state.trim()) errors.state = "State is required";
     if (!/^\d{4,6}$/.test(address.zip)) errors.zip = "ZIP must be 4-6 digits";
@@ -73,10 +76,13 @@ export default function CheckoutClient() {
   }
 
   function handleNext() {
+    if (step === 0 && !validateAddress()) return;
+    if (step === 2 && !validatePayment()) return;
     setStep((s) => Math.min(3, s + 1));
   }
 
   function handlePlace() {
+    if (!validateAddress()) { setStep(0); return; }
     if (!validatePayment()) return;
     setProcessing(true);
     setTimeout(() => {
@@ -129,7 +135,7 @@ export default function CheckoutClient() {
                 <Field label="Full name" value={address.fullName} error={addressErrors.fullName} onChange={(v) => setAddress({ ...address, fullName: v })} />
                 <Field label="Email" type="email" value={address.email} error={addressErrors.email} onChange={(v) => setAddress({ ...address, email: v })} />
                 <Field label="Phone" value={address.phone} error={addressErrors.phone} onChange={(v) => setAddress({ ...address, phone: v })} />
-                <Field label="Country" value={address.country} onChange={(v) => setAddress({ ...address, country: v })} />
+                <Field label="Country" error={addressErrors.country} value={address.country} onChange={(v) => setAddress({ ...address, country: v })} />
                 <div className="sm:col-span-2">
                   <Field label="Street address" value={address.line1} error={addressErrors.line1} onChange={(v) => setAddress({ ...address, line1: v })} />
                 </div>
@@ -152,7 +158,7 @@ export default function CheckoutClient() {
                     </div>
                     <p className="ml-6 text-sm text-muted">{method.eta}</p>
                   </div>
-                  <span className="font-semibold">{method.price === 0 ? "Free" : formatPrice(method.price)}</span>
+                  <span className="font-semibold">{getTotals(items, coupon, method.price).shipping === 0 ? "Free" : formatPrice(method.price)}</span>
                 </label>
               ))}
             </div>
@@ -229,17 +235,21 @@ export default function CheckoutClient() {
 }
 
 function Field({ label, value, onChange, error, type = "text", placeholder }) {
+  const id = useId();
   return (
     <div>
-      <label className="label">{label}</label>
+      <label htmlFor={id} className="label">{label}</label>
       <input
+        id={id}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? `${id}-error` : undefined}
         type={type}
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className={`input ${error ? "border-red-400 focus:border-red-500 focus:ring-red-100" : ""}`}
       />
-      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+      {error && <p id={`${id}-error`} role="alert" className="mt-1 text-xs text-red-600">{error}</p>}
     </div>
   );
 }

@@ -1,9 +1,9 @@
 export function formatPrice(value) {
-  return "$" + (Math.round(value * 1000000) / 1000000);
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
 }
 
 export function salePrice(product) {
-  return product.price * (1 - product.discountPercentage / 100);
+  return Math.round(product.price * (1 - (product.discountPercentage || 0) / 100) * 100) / 100;
 }
 
 export function formatDate(value) {
