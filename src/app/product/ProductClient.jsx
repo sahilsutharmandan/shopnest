@@ -90,7 +90,7 @@ export default function ProductClient() {
       <div className="grid gap-8 lg:grid-cols-2">
         <div>
           <div className="overflow-hidden rounded-2xl bg-white shadow-card">
-            <img src={product.images[activeImage]} alt={product.title} className="h-96 w-full" />
+            <img src={product.images[activeImage]} alt={product.title} className="h-96 w-full object-contain p-4" />
           </div>
           {product.images.length > 1 && (
             <div className="mt-3 flex gap-2 overflow-x-auto">
@@ -100,7 +100,7 @@ export default function ProductClient() {
                   onClick={() => setActiveImage(i)}
                   className={`h-20 w-20 shrink-0 overflow-hidden rounded-lg border-2 ${activeImage === i ? "border-brand-500" : "border-transparent"}`}
                 >
-                  <img src={img} alt="" className="h-full w-full" />
+                  <img src={img} alt="" className="h-full w-full object-contain p-1" />
                 </button>
               ))}
             </div>

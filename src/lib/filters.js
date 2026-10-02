@@ -3,19 +3,19 @@ export function filterProducts(products, filters) {
   let result = products;
 
   if (category) {
-    result = products.filter((p) => p.category === category);
+    result = result.filter((p) => p.category === category);
   }
   if (q) {
     const needle = q.toLowerCase();
-    result = products.filter((p) =>
+    result = result.filter((p) =>
       `${p.title} ${p.brand} ${p.description}`.toLowerCase().includes(needle),
     );
   }
   if (rating) {
-    result = products.filter((p) => p.rating >= rating);
+    result = result.filter((p) => p.rating >= rating);
   }
   if (priceMax) {
-    result = products.filter((p) => p.price <= priceMax);
+    result = result.filter((p) => p.price <= priceMax);
   }
 
   return result;

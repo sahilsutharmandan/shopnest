@@ -61,7 +61,7 @@ export default function ProductsClient() {
           <p className="text-sm text-muted">{filtered.length} results{q ? ` for "${q}"` : ""}</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => setSidebarOpen((v) => !v)} className="btn-outline lg:hidden">
+          <button onClick={() => setSidebarOpen((v) => !v)} className="btn-outline md:hidden">
             <FilterIcon className="h-4 w-4" /> Filters
           </button>
           <select value={sort} onChange={(e) => updateParam("sort", e.target.value)} className="input w-auto">
@@ -90,7 +90,7 @@ export default function ProductsClient() {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
+      <div className="grid gap-6 md:grid-cols-[240px_1fr]">
         <aside className={`${sidebarOpen ? "block" : "hidden"} md:block`}>
           <div className="rounded-xl bg-white p-5 shadow-card">
             <p className="mb-3 text-sm font-semibold">Category</p>
