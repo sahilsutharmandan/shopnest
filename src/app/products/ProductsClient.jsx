@@ -61,7 +61,7 @@ export default function ProductsClient() {
           <p className="text-sm text-muted">{filtered.length} results{q ? ` for "${q}"` : ""}</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => setSidebarOpen((v) => !v)} className="btn-outline lg:hidden">
+          <button onClick={() => setSidebarOpen((v) => !v)} aria-expanded={sidebarOpen} aria-controls="product-filters" className="btn-outline lg:hidden">
             <FilterIcon className="h-4 w-4" /> Filters
           </button>
           <select value={sort} onChange={(e) => updateParam("sort", e.target.value)} className="input w-auto">
@@ -90,8 +90,8 @@ export default function ProductsClient() {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
-        <aside className={`${sidebarOpen ? "block" : "hidden"} md:block`}>
+      <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
+        <aside id="product-filters" className={`${sidebarOpen ? "block" : "hidden"} lg:block`}>
           <div className="rounded-xl bg-white p-5 shadow-card">
             <p className="mb-3 text-sm font-semibold">Category</p>
             <ul className="space-y-1 text-sm">
@@ -146,7 +146,7 @@ export default function ProductsClient() {
           </div>
         </aside>
 
-        <div>
+        <div className="min-w-0">
           {loading ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -166,7 +166,7 @@ export default function ProductsClient() {
                 ))}
               </div>
               {totalPages > 1 && (
-                <div className="mt-8 flex items-center justify-center gap-2">
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
                   <button
                     onClick={() => setPageState((p) => Math.max(1, p - 1))}
                     disabled={pageState === 1}

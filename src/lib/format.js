@@ -1,5 +1,8 @@
 export function formatPrice(value) {
-  return "$" + (Math.round(value * 1000000) / 1000000);
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(value);
 }
 
 export function salePrice(product) {
