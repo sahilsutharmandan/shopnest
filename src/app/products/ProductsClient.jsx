@@ -42,9 +42,18 @@ export default function ProductsClient() {
     [products, category, q, rating, priceMax, sort],
   );
 
+  useEffect(() => {
+    setPageState(1);
+  }, [category, q, rating, priceMax, sort]);
+
+  useEffect(() => {
+    if (page) setPageState(page);
+  }, [page]);
+
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const currentPage = Math.min(pageState, totalPages);
-  const visible = filtered.slice(0, PAGE_SIZE);
+  const currentPage = Math.max(1, Math.min(pageState, totalPages));
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const visible = filtered.slice(start, start + PAGE_SIZE);
 
   function updateParam(key, value) {
     const next = new URLSearchParams(params.toString());
@@ -168,8 +177,11 @@ export default function ProductsClient() {
               {totalPages > 1 && (
                 <div className="mt-8 flex items-center justify-center gap-2">
                   <button
-                    onClick={() => setPageState((p) => Math.max(1, p - 1))}
-                    disabled={pageState === 1}
+                    onClick={() => {
+                      setPageState((p) => Math.max(1, p - 1));
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                    disabled={currentPage === 1}
                     className="btn-outline disabled:opacity-40"
                   >
                     Previous
@@ -177,15 +189,21 @@ export default function ProductsClient() {
                   {Array.from({ length: totalPages }).map((_, i) => (
                     <button
                       key={i}
-                      onClick={() => setPageState(i + 1)}
-                      className={`h-9 min-w-9 rounded-lg px-3 text-sm font-medium ${pageState === i + 1 ? "bg-brand-600 text-white" : "bg-white text-gray-700 shadow-card"}`}
+                      onClick={() => {
+                        setPageState(i + 1);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                      className={`h-9 min-w-9 rounded-lg px-3 text-sm font-medium ${currentPage === i + 1 ? "bg-brand-600 text-white" : "bg-white text-gray-700 shadow-card"}`}
                     >
                       {i + 1}
                     </button>
                   ))}
                   <button
-                    onClick={() => setPageState((p) => Math.min(totalPages, p + 1))}
-                    disabled={pageState === totalPages}
+                    onClick={() => {
+                      setPageState((p) => Math.min(totalPages, p + 1));
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                    disabled={currentPage === totalPages}
                     className="btn-outline disabled:opacity-40"
                   >
                     Next
