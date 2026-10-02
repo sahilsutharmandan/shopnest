@@ -35,7 +35,7 @@ export default function ProductCard({ product, view = "grid" }) {
     return (
       <div className="flex gap-4 rounded-xl bg-white p-4 shadow-card">
         <Link href={`/product?id=${product.id}`} className="shrink-0">
-          <img src={product.thumbnail} alt={product.title} className="h-32 w-32 rounded-lg bg-gray-100 object-cover" />
+          <img src={product.thumbnail} alt={product.title} className="h-32 w-32 rounded-lg bg-gray-100 object-contain p-3" />
         </Link>
         <div className="flex flex-1 flex-col">
           <div className="flex items-start justify-between gap-3">
@@ -71,9 +71,9 @@ export default function ProductCard({ product, view = "grid" }) {
   }
 
   return (
-    <div className="rounded-xl bg-white shadow-card">
-      <Link href={`/product?id=${product.id}`} className="relative block overflow-hidden rounded-t-xl">
-        <img src={product.thumbnail} alt={product.title} className="h-52 w-full bg-gray-100 object-cover" />
+    <div className="flex h-full min-w-0 flex-col rounded-xl bg-white shadow-card">
+      <Link href={`/product?id=${product.id}`} className="relative block shrink-0 overflow-hidden rounded-t-xl">
+        <img src={product.thumbnail} alt={product.title} className="h-52 w-full bg-gray-100 object-contain p-3" />
         {hasDiscount && (
           <span className="badge absolute left-3 top-3 bg-emerald-100 text-emerald-700">
             -{Math.round(product.discountPercentage)}%
@@ -90,15 +90,15 @@ export default function ProductCard({ product, view = "grid" }) {
           <HeartIcon filled={isWished} className="h-4 w-4" />
         </button>
       </Link>
-      <div className="p-4">
+      <div className="flex flex-1 flex-col p-4">
         <p className="text-[11px] uppercase tracking-wide text-muted">{product.brand}</p>
-        <Link href={`/product?id=${product.id}`} className="mt-0.5 text-sm font-semibold hover:text-brand-600">
+        <Link href={`/product?id=${product.id}`} className="mt-0.5 block min-h-10 text-sm font-semibold leading-5 hover:text-brand-600">
           {product.title}
         </Link>
         <div className="mt-1">
           <Rating value={product.rating} count={product.reviews?.length} />
         </div>
-        <div className="mt-3 flex items-center justify-between">
+        <div className="mt-auto flex items-center justify-between gap-2 pt-3">
           <div>
             <p className="text-base font-bold">{formatPrice(priceNow)}</p>
             {hasDiscount && <p className="text-xs text-muted">{formatPrice(product.price)}</p>}
@@ -106,7 +106,7 @@ export default function ProductCard({ product, view = "grid" }) {
           <button
             onClick={handleAdd}
             disabled={outOfStock}
-            className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-700"
+            className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500"
           >
             Add
           </button>

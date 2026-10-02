@@ -25,7 +25,7 @@ export default function ProductsClient() {
   const rating = Number(params.get("rating") || 0);
   const priceMax = Number(params.get("priceMax") || 0);
   const page = Number(params.get("page") || 1);
-  const [pageState, setPageState] = useState(page);
+
 
   useEffect(() => {
     setLoading(true);
@@ -43,13 +43,14 @@ export default function ProductsClient() {
   );
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const currentPage = Math.min(pageState, totalPages);
-  const visible = filtered.slice(0, PAGE_SIZE);
+  const currentPage = Math.min(Math.max(1, Number.isSafeInteger(page) ? page : 1), totalPages);
+  const visible = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   function updateParam(key, value) {
     const next = new URLSearchParams(params.toString());
     if (value === "" || value === null || value === undefined) next.delete(key);
     else next.set(key, String(value));
+    if (key !== "page") next.delete("page");
     router.push(`/products?${next.toString()}`);
   }
 
@@ -168,8 +169,8 @@ export default function ProductsClient() {
               {totalPages > 1 && (
                 <div className="mt-8 flex items-center justify-center gap-2">
                   <button
-                    onClick={() => setPageState((p) => Math.max(1, p - 1))}
-                    disabled={pageState === 1}
+                    onClick={() => updateParam("page", currentPage - 1)}
+                    disabled={currentPage === 1}
                     className="btn-outline disabled:opacity-40"
                   >
                     Previous
@@ -177,15 +178,16 @@ export default function ProductsClient() {
                   {Array.from({ length: totalPages }).map((_, i) => (
                     <button
                       key={i}
-                      onClick={() => setPageState(i + 1)}
-                      className={`h-9 min-w-9 rounded-lg px-3 text-sm font-medium ${pageState === i + 1 ? "bg-brand-600 text-white" : "bg-white text-gray-700 shadow-card"}`}
+                      aria-current={currentPage === i + 1 ? "page" : undefined}
+                      onClick={() => updateParam("page", i + 1)}
+                      className={`h-9 min-w-9 rounded-lg px-3 text-sm font-medium ${currentPage === i + 1 ? "bg-brand-600 text-white" : "bg-white text-gray-700 shadow-card"}`}
                     >
                       {i + 1}
                     </button>
                   ))}
                   <button
-                    onClick={() => setPageState((p) => Math.min(totalPages, p + 1))}
-                    disabled={pageState === totalPages}
+                    onClick={() => updateParam("page", currentPage + 1)}
+                    disabled={currentPage === totalPages}
                     className="btn-outline disabled:opacity-40"
                   >
                     Next
