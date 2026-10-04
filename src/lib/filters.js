@@ -9,18 +9,17 @@ export function filterProducts(products, filters) {
   });
 }
 
+const byField = (key, direction = 1) => (a, b) => (a[key] - b[key]) * direction;
+
+const sorters = {
+  "price-asc": byField("price"),
+  "price-desc": byField("price", -1),
+  rating: byField("rating", -1),
+  discount: byField("discountPercentage"),
+  name: (a, b) => a.title.localeCompare(b.title),
+};
+
 export function sortProducts(products, sort) {
-  const copy = [...products];
-  switch (sort) {
-    case "price-asc":
-      return copy.sort((a, b) => a.price - b.price);
-    case "price-desc":
-      return copy.sort((a, b) => b.price - a.price);
-    case "rating":
-      return copy.sort((a, b) => b.rating - a.rating);
-    case "discount":
-      return copy.sort((a, b) => b.discountPercentage - a.discountPercentage);
-    default:
-      return copy;
-  }
+  const compare = sorters[sort];
+  return compare ? [...products].sort(compare) : [...products];
 }

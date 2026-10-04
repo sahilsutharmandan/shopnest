@@ -69,6 +69,7 @@ export default function ProductsClient() {
             <option value="price-desc">Price: High to low</option>
             <option value="rating">Top rated</option>
             <option value="discount">Biggest discount</option>
+            <option value="name">Name: A to Z</option>
           </select>
           <div className="hidden overflow-hidden rounded-lg border border-gray-300 sm:flex">
             <button
