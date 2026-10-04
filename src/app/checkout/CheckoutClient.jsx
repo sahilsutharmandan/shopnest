@@ -110,7 +110,7 @@ export default function CheckoutClient() {
     <div className="container-page py-8">
       <h1 className="text-2xl font-bold">Checkout</h1>
 
-      <ol className="mt-6 flex flex-wrap gap-3 text-sm">
+      <ol className="mt-6 flex items-center gap-3 overflow-hidden whitespace-nowrap text-sm">
         {steps.map((label, i) => (
           <li key={label} className="flex items-center gap-2">
             <span className={`grid h-7 w-7 place-items-center rounded-full text-xs font-semibold ${step >= i ? "bg-brand-600 text-white" : "bg-gray-200 text-gray-500"}`}>

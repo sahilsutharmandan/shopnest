@@ -74,7 +74,7 @@ export default function CartClient() {
           ))}
         </ul>
 
-        <aside className="h-fit rounded-xl bg-white p-6 shadow-card">
+        <aside className="h-fit rounded-xl bg-white p-6 shadow-card lg:sticky lg:top-4">
           <p className="text-lg font-semibold">Order summary</p>
 
           <form onSubmit={handleApply} className="mt-4">
