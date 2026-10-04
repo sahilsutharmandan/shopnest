@@ -16,20 +16,19 @@ export default function LoginClient() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e) {
+  function handleSubmit(e) {
     e.preventDefault();
+    if (loading) return;
     setError("");
     setLoading(true);
-    try {
-      const user = await login(username, password);
-      dispatch(setUser(user));
-      dispatch(showToast(`Welcome back, ${user.firstName}`));
-      router.push("/");
-    } catch (err) {
-      setError(err.message || "Login failed");
-    } finally {
-      setLoading(false);
-    }
+    login(username.trim(), password)
+      .then((user) => {
+        setLoading(false);
+        dispatch(setUser(user));
+        dispatch(showToast(`Welcome back, ${user.firstName}`));
+        router.push("/");
+      })
+      .catch((err) => setError(err.message || "Login failed"));
   }
 
   return (
