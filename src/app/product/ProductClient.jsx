@@ -22,26 +22,35 @@ export default function ProductClient() {
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeImage, setActiveImage] = useState(0);
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState("description");
 
   useEffect(() => {
     if (!id) return;
+    let cancelled = false;
     setLoading(true);
-    setActiveImage(0);
     setQty(1);
-    getProduct(id)
-      .then((p) => {
+
+    async function load() {
+      try {
+        const p = await getProduct(id);
+        if (cancelled) return;
         setProduct(p);
-        return getCategoryProducts(p.category, 8);
-      })
-      .then((list) => setRelated(list.filter((p) => String(p.id) !== String(id)).slice(0, 4)))
-      .catch(() => setProduct(null))
-      .finally(() => setLoading(false));
+        setLoading(false);
+        const list = await getCategoryProducts(p.category, 8);
+        if (!cancelled) setRelated(list.filter((item) => item.id !== id).slice(0, 4));
+      } catch {
+        if (!cancelled) setProduct(null);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
-  if (loading) {
+  if (!product && loading) {
     return (
       <div className="container-page grid gap-8 py-10 lg:grid-cols-2">
         <div className="h-96 animate-pulse rounded-2xl bg-gray-100" />
@@ -76,7 +85,7 @@ export default function ProductClient() {
   }
 
   return (
-    <div className="container-page py-8">
+    <div className={`container-page py-8 transition-opacity ${loading ? "opacity-60" : ""}`}>
       <nav className="mb-4 flex flex-wrap gap-1 text-sm text-muted">
         <Link href="/" className="hover:text-ink">Home</Link>
         <span>/</span>
@@ -88,24 +97,7 @@ export default function ProductClient() {
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-2">
-        <div>
-          <div className="overflow-hidden rounded-2xl bg-white shadow-card">
-            <img src={product.images[activeImage]} alt={product.title} className="h-96 w-full object-cover" />
-          </div>
-          {product.images.length > 1 && (
-            <div className="mt-3 flex gap-2 overflow-x-auto">
-              {product.images.map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveImage(i)}
-                  className={`h-20 w-20 shrink-0 overflow-hidden rounded-lg border-2 ${activeImage === i ? "border-brand-500" : "border-transparent"}`}
-                >
-                  <img src={img} alt="" className="h-full w-full object-cover" />
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <Gallery images={product.images} title={product.title} />
 
         <div>
           <p className="text-sm uppercase tracking-wide text-muted">{product.brand}</p>
@@ -203,6 +195,31 @@ export default function ProductClient() {
             ))}
           </div>
         </section>
+      )}
+    </div>
+  );
+}
+
+function Gallery({ images, title }) {
+  const [active, setActive] = useState(0);
+
+  return (
+    <div>
+      <div className="overflow-hidden rounded-2xl bg-white shadow-card">
+        <img src={images[active]} alt={title} className="h-96 w-full object-cover" />
+      </div>
+      {images.length > 1 && (
+        <div className="mt-3 flex gap-2 overflow-x-auto">
+          {images.map((img, i) => (
+            <button
+              key={i}
+              onClick={() => setActive(i)}
+              className={`h-20 w-20 shrink-0 overflow-hidden rounded-lg border-2 ${active === i ? "border-brand-500" : "border-transparent"}`}
+            >
+              <img src={img} alt="" className="h-full w-full object-cover" />
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );
