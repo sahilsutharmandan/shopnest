@@ -22,7 +22,7 @@ export default function CartClient() {
   function handleApply(e) {
     e.preventDefault();
     setError("");
-    const result = findCoupon(code);
+    const result = findCoupon(code, totals.subtotal);
     if (result.error) {
       setError(result.error);
       return;

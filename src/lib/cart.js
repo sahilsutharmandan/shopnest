@@ -1,11 +1,14 @@
 import { coupons, TAX_RATE, FREE_SHIPPING_OVER } from "@/data/coupons";
-import { salePrice } from "./format";
+import { formatPrice, isPastDate, salePrice } from "./format";
 
-export function findCoupon(code) {
+export function findCoupon(code, subtotal = 0) {
   const coupon = coupons.find((c) => c.code === code.trim().toUpperCase());
   if (!coupon) return { error: "This code isn't valid." };
-  if (coupon.expires && new Date(coupon.expires) < new Date()) {
+  if (coupon.expires && isPastDate(coupon.expires)) {
     return { error: "This code has expired." };
+  }
+  if (coupon.minSubtotal && subtotal < coupon.minSubtotal) {
+    return { error: `Spend ${formatPrice(coupon.minSubtotal)} or more to use ${coupon.code}.` };
   }
   return { coupon };
 }
@@ -18,7 +21,7 @@ export function getTotals(items, coupon, shippingPrice = 5.99) {
 
   if (coupon) {
     if (coupon.type === "percent") discount = (subtotal * coupon.value) / 100;
-    if (coupon.type === "flat" && subtotal >= (coupon.minSubtotal || 0)) discount = coupon.value;
+    if (coupon.type === "flat") discount = coupon.value;
     if (coupon.type === "shipping") shipping = 0;
   }
 
